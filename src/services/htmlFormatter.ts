@@ -6,7 +6,7 @@
 
 import { HTMLFormatConfiguration } from '../htmlLanguageTypes';
 import { TextDocument, Range, TextEdit, Position } from 'vscode-languageserver-types';
-import { IBeautifyHTMLOptions, html_beautify } from '../beautify/beautify-html';
+import { IBeautifyHTMLOptions, html } from '../beautify/beautifier';
 import { repeat } from '../utils/strings';
 
 export function format(document: TextDocument, range: Range | undefined, options: HTMLFormatConfiguration): TextEdit[] {
@@ -69,7 +69,8 @@ export function format(document: TextDocument, range: Range | undefined, options
 		eol: '\n'
 	};
 
-	let result = html_beautify(value, htmlOptions);
+	let result = beautify_html(value, htmlOptions);
+
 	if (initialIndentLevel > 0) {
 		let indent = options.insertSpaces ? repeat(' ', tabSize * initialIndentLevel) : repeat('\t', initialIndentLevel);
 		result = result.split('\n').join('\n' + indent);
@@ -81,6 +82,16 @@ export function format(document: TextDocument, range: Range | undefined, options
 		range: range,
 		newText: result
 	}];
+}
+
+function beautify_html(value:string, options:IBeautifyHTMLOptions): string {
+	if (!options.js) {
+		options.js = {};
+	}
+
+	options.js.disabled = true;
+
+	return html(value, options);
 }
 
 function getFormatOption(options: HTMLFormatConfiguration, key: keyof HTMLFormatConfiguration, dflt: any): any {

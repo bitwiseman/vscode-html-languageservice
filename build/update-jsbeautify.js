@@ -62,33 +62,30 @@ function update(moduleName, repoPath, dest, addHeader, patch) {
     }, console.error);
 }
 
-update('js-beautify', 'js/lib/beautify-html.js', './src/beautify/beautify-html.js', true);
-update('js-beautify', 'js/lib/beautify-css.js', './src/beautify/beautify-css.js', true);
 update('js-beautify', 'LICENSE', './src/beautify/beautify-license');
 
-// ESM version
-update('js-beautify', 'js/lib/beautify-html.js', './src/beautify/esm/beautify-html.js', true, function (contents) {
-    contents = contents.replace(
-        /\(function\(\) \{\nvar legacy_beautify_html/m,
-        `import { js_beautify } from "./beautify";
-import { css_beautify } from "./beautify-css";
+update('js-beautify', 'js/lib/beautifier.js', './src/beautify/beautifier.js', true);
 
-var legacy_beautify_html`
-    );
-    contents = contents.substring(0, contents.indexOf('var style_html = legacy_beautify_html;'));
+// ESM version
+update('js-beautify', 'js/lib/beautifier.js', './src/beautify/esm/beautifier.js', true, function (contents) {
+    contents = 'var local_beautifier = \n' + contents.substring(
+        contents.indexOf('return') + 'return'.length,
+        contents.indexOf('/******/ ]);') + '/******/ ]);'.length);
     contents = contents + `
+export const beautifier = local_beautifier;
 export function html_beautify(html_source, options) {
-    return legacy_beautify_html(html_source, options, js_beautify, css_beautify);
+    return local_beautifier.html(html_source, options, function js_beautify(js_source_text, options) {
+        // no js formatting
+        return js_source_text;
+    });
 }
 `;
 
-    return contents;
-});
-update('js-beautify', 'js/lib/beautify-css.js', './src/beautify/esm/beautify-css.js', true, function (contents) {
-    contents = contents.replace(
-        /\(function\(\) \{\nvar legacy_beautify_css/m,
-        'export const css_beautify'
-    );
-    contents = contents.substring(0, contents.indexOf('var css_beautify = legacy_beautify_css;'));
+    contents = contents + `
+export function css_beautify(css_source, options) {
+    return local_beautifier.css(css_source, options);
+}
+`;
+
     return contents;
 });

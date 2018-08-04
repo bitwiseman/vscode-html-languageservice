@@ -3,6 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+export interface IBeautifyCSSOptions {
+    indent_size?: number; // (4) — indentation size,
+    indent_char?: string; // (space) — character to indent with,
+    selector_separator_newline?: boolean; // (true) - separate selectors with newline or not (e.g. "a,\nbr" or "a, br")
+    end_with_newline?: boolean; // (false) - end with a newline
+    newline_between_rules?: boolean; // (true) - add a new line after every css rule
+}
+
+// JS beautification is disabled in this plugin
+export interface IBeautifyJSOptions {
+    disabled?: boolean;
+}
+
 export interface IBeautifyHTMLOptions {
     /**
      * indent <head> and <body> sections
@@ -89,7 +102,7 @@ export interface IBeautifyHTMLOptions {
      * wrap each attribute ('force-expand-multiline')
      * multiple attributes are allowed per line, attributes that wrap will align vertically ('aligned-multiple')
      * wrap only when line length is reached ('auto')
-     * 
+     *
      * default auto
      */
     wrap_attributes?: 'auto' | 'force' | 'force-expand-multiline' | 'force-aligned' | 'aligned-multiple';
@@ -99,14 +112,27 @@ export interface IBeautifyHTMLOptions {
      */
     wrap_attributes_indent_size?: number;
 
-    /* 
+    /*
      * end of line character to use
      */
     eol?: string;
+
+    /*
+     * options for CSS beautification.
+     * If null, inherits from html settings
+     */
+    css?: IBeautifyCSSOptions;
+
+    /*
+     * options for JS beautification.
+     * If null, inherits from html settings
+     */
+    js?: IBeautifyJSOptions;
 }
 
-export interface IBeautifyHTML {
-    (value: string, options: IBeautifyHTMLOptions): string;
+export interface IBeautifyCSS {
+	(value:string, options:IBeautifyCSSOptions): string;
 }
 
-export declare var html_beautify: IBeautifyHTML;
+declare function html(value:string, options:IBeautifyHTMLOptions, js?:Function, css?:IBeautifyCSS): string;
+declare function css(value:string, options:IBeautifyCSSOptions): string;
