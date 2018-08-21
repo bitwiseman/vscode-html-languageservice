@@ -193,4 +193,45 @@ suite('JSON Formatter', () => {
 
 		format(content, expected);
 	});
+
+	test('bug 29 ', () => {
+		var content = [
+			'<div>',
+			'  <pre>',
+			'    stuff',
+			'  </pre>',
+			'</div>'
+		].join('\n');
+
+		var expected = [
+			'<div>',
+			'  <pre>',
+			'    stuff',
+			'  </pre>',
+			'</div>'
+		].join('\n');
+
+		format(content, expected);
+	});
+
+	test('bug 29', () => {
+		var content = [
+			'<div>',
+			'|  <pre>',
+			'    stuff',
+			'  </pre>|',
+			'</div>'
+		].join('\n');
+
+		var expected = [
+			'<div>',
+			'  <pre>',
+			'    stuff',
+			'  </pre>',
+			'</div>'
+		].join('\n');
+
+		format(content, expected);
+	});
+
 });
